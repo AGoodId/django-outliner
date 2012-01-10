@@ -32,6 +32,10 @@ class OutlinerModelAdmin(MPTTModelAdmin):
   /django-mptt/) with views that allow insertion and moving of nodes
   through AJAX POST requests.
   """
+  
+  list_max_show_all = 10000
+  list_per_page = 10000
+  
   def get_changelist(self, request, **kwargs):
     """
     Returns the ChangeList class for use on the changelist page.
