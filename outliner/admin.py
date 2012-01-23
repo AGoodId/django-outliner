@@ -14,7 +14,7 @@ class OutlinerChangeList(ChangeList):
   """
   def __init__(self, *args, **kwargs):
     super(OutlinerChangeList, self).__init__(*args, **kwargs)
-    self.root_query_set = self.model.objects.get_query_set()
+    #self.root_query_set = self.model.objects.get_query_set()
     self.query_set = self.get_query_set()
     self.get_results(args[0])
   
