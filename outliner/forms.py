@@ -1,3 +1,7 @@
+"""
+The outliner.forms module contains a custom FormField that shows nested
+structures in a drop down.
+"""
 from django import forms
 from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe

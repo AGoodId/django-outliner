@@ -1,6 +1,7 @@
 """
-This module contains the class definitions needed to convert the default
-Django admin changelist to a drag-and-drop enabled outliner.
+The outliner.admin module contains the class definitions needed to
+convert the default Django admin changelist to a drag-and-drop enabled
+outliner.
 
 The classes in this module enforces correct sort order of the outliner
 tree and adds handling of AJAX callbacks to update the tree structure.
@@ -55,7 +56,7 @@ class OutlinerModelAdmin(MPTTModelAdmin):
     """
     Extends the default ModelAdmin ``changelist_view`` function with
     logic for handling AJAX requests. Performs the requested action if
-    the request object is ajax, otherwise it calls super.
+    the request is sent with ajax, otherwise it calls super.
     """    
     # handle common AJAX requests
     if request.is_ajax():
