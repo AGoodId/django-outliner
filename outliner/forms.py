@@ -8,9 +8,22 @@ from mptt.exceptions import InvalidMove
 
 class OutlinerChoiceField(forms.ModelChoiceField):
   """
-  A ModelChoiceField for tree nodes. A ModelChoiceField is a select-tag.
-  This ModelChoiceField presents the options of the select-tag as a
-  nested structure
+  A ModelChoiceField for tree nodes. A ModelChoiceField is rendered as
+  an HTML select tag. This extension of the ModelChoiceField presents
+  the options of the select tag as a nested structure, using an optional
+  ``level_indicator`` keyword argument to determine how the structure
+  should be indented.
+  
+  Example:
+    ``level_indicator="---"``
+    
+    would give the following representation of the tree structure:
+    
+    | ``root``
+    | ``---first_level_child``
+    | ``------second_level_child``
+    | ``---------third_level_child``
+    | ``etc.``
   """
   def __init__(self, *args, **kwargs):
     self.level_indicator = kwargs.pop('level_indicator', u'---')
@@ -20,7 +33,6 @@ class OutlinerChoiceField(forms.ModelChoiceField):
 
   def label_from_instance(self, obj):
     """
-    Creates the label printed to the option-tag. This will be on the format
-    "--- [node_label]" if the level indicator is set to "---".
+    Creates the label for an HTML option tag.
     """
     return mark_safe(u'%s %s' % (self.level_indicator * getattr(obj, obj._mptt_meta.level_attr), smart_unicode(obj)))

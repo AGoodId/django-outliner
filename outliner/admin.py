@@ -1,3 +1,10 @@
+"""
+This module contains the class definitions needed to convert the default
+Django admin changelist to a drag-and-drop enabled outliner.
+
+The classes in this module enforces correct sort order of the outliner
+tree and adds handling of AJAX callbacks to update the tree structure.
+"""
 from django.contrib.admin.views.main import ChangeList
 from django.http import HttpResponse, HttpResponseBadRequest
 
@@ -8,13 +15,14 @@ from mptt.exceptions import InvalidMove
 
 class OutlinerChangeList(ChangeList):
   """
-  Outliner ChangeList class. Inherits the django.contrib.admin ChangeList
-  class and extends it by adding logic for sorting nodes in tree order.
-  Requires an MPTTModel to function as intended.
+  OutlinerChangeList class. Inherits the django.contrib.admin.ChangeList
+  class and enforces sorting of nodes in tree order. Requires an
+  mptt.models.MPTTModel
+  (from `django-mptt <https://github.com/django-mptt/django-mptt/>`_)
+  to function as intended.
   """
   def __init__(self, *args, **kwargs):
     super(OutlinerChangeList, self).__init__(*args, **kwargs)
-    #self.root_query_set = self.model.objects.get_query_set()
     self.query_set = self.get_query_set()
     self.get_results(args[0])
   
@@ -28,9 +36,10 @@ class OutlinerChangeList(ChangeList):
 
 class OutlinerModelAdmin(MPTTModelAdmin):
   """
-  This class extends the MPTTModelAdmin (https://github.com/django-mptt
-  /django-mptt/) with views that allow insertion and moving of nodes
-  through AJAX POST requests.
+  This class extends the mptt.admin.MPTTModelAdmin
+  (from `django-mptt <https://github.com/django-mptt/django-mptt/>`_)
+  with views that allow insertion and moving of nodes through AJAX POST
+  requests.
   """
   
   list_max_show_all = 10000
@@ -38,14 +47,15 @@ class OutlinerModelAdmin(MPTTModelAdmin):
   
   def get_changelist(self, request, **kwargs):
     """
-    Returns the ChangeList class for use on the changelist page.
+    Returns the OutlinerChangeList class for use on the changelist page.
     """
     return OutlinerChangeList
 
   def changelist_view(self, request, extra_context=None, *args, **kwargs):
     """
     Extends the default ModelAdmin ``changelist_view`` function with
-    logic for handling AJAX requests.
+    logic for handling AJAX requests. Performs the requested action if
+    the request object is ajax, otherwise it calls super.
     """    
     # handle common AJAX requests
     if request.is_ajax():
