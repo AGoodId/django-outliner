@@ -61,12 +61,12 @@ class OutlinerModelAdmin(MPTTModelAdmin):
     if request.is_ajax():
       cmd = request.POST.get('__cmd')
       if cmd == 'move_node':
-        return self.move_node(request)
+        return self._move_node(request)
       else:
         return HttpResponseBadRequest('AJAX request not understood.')
     return super(OutlinerModelAdmin, self).changelist_view(request, extra_context, *args, **kwargs)
 
-  def move_node(self, request):
+  def _move_node(self, request):
     """
     Takes a POST request containing node, target and parent parameters
     and moves the node accordingly.
