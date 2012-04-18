@@ -23,12 +23,13 @@ class OutlinerChangeList(ChangeList):
   to function as intended.
   """
   def __init__(self, *args, **kwargs):
+    request = args[0]
     super(OutlinerChangeList, self).__init__(*args, **kwargs)
-    self.query_set = self.get_query_set()
+    self.query_set = self.get_query_set(request)
     self.get_results(args[0])
   
-  def get_query_set(self):
-    qs = super(OutlinerChangeList, self).get_query_set()
+  def get_query_set(self, request):
+    qs = super(OutlinerChangeList, self).get_query_set(request)
     # always order by (tree_id, left)
     tree_id = qs.model._mptt_meta.tree_id_attr
     left = qs.model._mptt_meta.left_attr
