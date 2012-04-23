@@ -26,7 +26,7 @@ class OutlinerChangeList(ChangeList):
     request = args[0]
     super(OutlinerChangeList, self).__init__(*args, **kwargs)
     self.query_set = self.get_query_set(request)
-    self.get_results(args[0])
+    self.get_results(request)
   
   def get_query_set(self, request):
     qs = super(OutlinerChangeList, self).get_query_set(request)
