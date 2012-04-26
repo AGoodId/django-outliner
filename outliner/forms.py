@@ -2,15 +2,15 @@
 The outliner.forms module contains a custom FormField that shows nested
 structures in a drop down.
 """
-from django import forms
 from django.utils.encoding import smart_unicode
 from django.utils.safestring import mark_safe
 
 
 from mptt.exceptions import InvalidMove
+from mptt.forms import TreeNodeChoiceField
 
 
-class OutlinerChoiceField(forms.ModelChoiceField):
+class OutlinerChoiceField(TreeNodeChoiceField):
   """
   A ModelChoiceField for tree nodes. A ModelChoiceField is rendered as
   an HTML select tag. This extension of the ModelChoiceField presents
@@ -30,10 +30,8 @@ class OutlinerChoiceField(forms.ModelChoiceField):
     | ``etc.``
   """
   def __init__(self, *args, **kwargs):
-    self.level_indicator = kwargs.pop('level_indicator', u'---')
-    if kwargs.get('required', True) and not 'empty_label' in kwargs:
-      kwargs['empty_label'] = None
     super(OutlinerChoiceField, self).__init__(*args, **kwargs)
+    self.level_indicator = kwargs.pop('level_indicator', u'---')
 
   def label_from_instance(self, obj):
     """
