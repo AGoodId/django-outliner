@@ -141,8 +141,9 @@ class BrowserModelAdmin(SortableModelAdmin):
       crumbs = parent.get_ancestors(include_self=True)
       extra_context.update({'parent': parent, 'crumbs': crumbs})
     except:
-      pass
+      extra_context.update({'parent': None, 'crumbs': None})
     extra_context.update({'crumb_query': crumb_query.urlencode()})
+
     # Store the query so the fields can access it
     self.crumb_query = crumb_query
     return super(BrowserModelAdmin, self).changelist_view(request, extra_context=extra_context)
