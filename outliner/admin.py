@@ -118,10 +118,46 @@ class OutlinerModelAdmin(SortableModelAdmin):
     return super(OutlinerModelAdmin, self).changelist_view(request, extra_context, *args, **kwargs)
 
 
+class BrowserChangeList(ChangeList):
+
+  tree_params = ['parent', 'level']
+
+  def get_filters(self, request):
+    if not self.model_admin.is_browsing(request):
+      for p in self.tree_params:
+        self.params.pop(p, None)
+    return super(BrowserChangeList, self).get_filters(request)
+
+  def get_query_set(self, request):
+    qs = super(BrowserChangeList, self).get_query_set(request)
+    if self.model_admin.is_browsing(request) and all(p not in self.params for p in self.tree_params):
+      qs = qs.filter(level=1)
+    return qs
+
+
 class BrowserModelAdmin(SortableModelAdmin):
   """
   An admin class that uses a browser with drag and drop for the change list.
   """
+
+  def is_browsing(self, request):
+    flat_params = ['q']
+    if all(p not in request.GET for p in flat_params):
+      return True
+    else:
+      return False
+
+  def is_tree_ordered(self, request):
+    if 'o' not in request.GET:
+      return True
+    else:
+      return False
+
+  def get_ordering(self, request):
+    return (self.model._mptt_meta.tree_id_attr, self.model._mptt_meta.left_attr)
+
+  def get_changelist(self, request, **kwargs):
+    return BrowserChangeList
 
   def changelist_view(self, request, extra_context={}):
     if request.is_ajax():
@@ -136,22 +172,21 @@ class BrowserModelAdmin(SortableModelAdmin):
     level = crumb_query.pop('level', [None])[0]
     parent_id = crumb_query.pop('parent', [None])[0]
     page = crumb_query.pop('p', [None])[0]
-    try:
-      parent = self.model.objects.get(pk=parent_id)
-      crumbs = parent.get_ancestors(include_self=True)
-    except:
-      parent = None
-      crumbs = None
+    query = crumb_query.pop('q', [None])[0]
+    parent = None
+    crumbs = None
+    if self.is_browsing(request):
+      try:
+        parent = self.model.objects.get(pk=parent_id)
+        crumbs = parent.get_ancestors(include_self=True)
+      except:
+        parent = self.model.on_site.get_root()
+        crumbs = parent.get_ancestors(include_self=True)
     extra_context.update({
       'crumb_query': crumb_query.urlencode(),
-      'parent': None,
-      'crumbs': None
+      'parent': parent,
+      'crumbs': crumbs
     })
-
-    # Store the query so the fields can access it
+    # Store the query and extra data so the fields can access it
     self.crumb_query = crumb_query
-    if parent is None and level is None:
-      self.browsing = False
-    else:
-      self.browsing = True
     return super(BrowserModelAdmin, self).changelist_view(request, extra_context=extra_context)
