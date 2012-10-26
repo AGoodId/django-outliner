@@ -178,10 +178,12 @@ class BrowserModelAdmin(SortableModelAdmin):
     if self.is_browsing(request):
       try:
         parent = self.model.objects.get(pk=parent_id)
-        crumbs = parent.get_ancestors(include_self=True)
       except:
         parent = self.model.on_site.get_root()
+      try:
         crumbs = parent.get_ancestors(include_self=True)
+      except:
+        pass
     extra_context.update({
       'crumb_query': crumb_query.urlencode(),
       'parent': parent,
