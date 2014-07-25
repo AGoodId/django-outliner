@@ -77,7 +77,14 @@ class OutlinerChangeList(ChangeList):
   def __init__(self, *args, **kwargs):
     request = args[0]
     super(OutlinerChangeList, self).__init__(*args, **kwargs)
-    self.query_set = self.get_query_set(request)
+
+    queryset = self.get_query_set(request)
+    if hasattr(self, 'queryset'):
+      self.queryset = queryset
+    else:
+      # Django 1.5 and older
+      self.query_set = queryset
+
     self.get_results(request)
   
   def get_query_set(self, request):
