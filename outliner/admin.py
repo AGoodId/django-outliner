@@ -78,7 +78,8 @@ class OutlinerChangeList(ChangeList):
     request = args[0]
     super(OutlinerChangeList, self).__init__(*args, **kwargs)
 
-    queryset = self.get_query_set(request)
+    queryset = self.get_queryset(request)
+
     if hasattr(self, 'queryset'):
       self.queryset = queryset
     else:
@@ -86,9 +87,9 @@ class OutlinerChangeList(ChangeList):
       self.query_set = queryset
 
     self.get_results(request)
-  
-  def get_query_set(self, request):
-    qs = super(OutlinerChangeList, self).get_query_set(request)
+
+  def get_queryset(self, request):
+    qs = super(OutlinerChangeList, self).get_queryset(request)
     # always order by (tree_id, left)
     tree_id = qs.model._mptt_meta.tree_id_attr
     left = qs.model._mptt_meta.left_attr
@@ -135,8 +136,8 @@ class BrowserChangeList(ChangeList):
         self.params.pop(p, None)
     return super(BrowserChangeList, self).get_filters(request)
 
-  def get_query_set(self, request):
-    qs = super(BrowserChangeList, self).get_query_set(request)
+  def get_queryset(self, request):
+    qs = super(BrowserChangeList, self).get_queryset(request)
     if self.model_admin.is_browsing(request) and all(p not in self.params for p in self.tree_params):
       qs = qs.filter(level=1)
     return qs
