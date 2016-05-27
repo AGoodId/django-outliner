@@ -148,7 +148,7 @@ class BrowserModelAdmin(SortableModelAdmin):
       return False
 
   def is_tree_ordered(self, request):
-    if 'o' not in request.GET:
+    if not request.GET.get('o'):
       return True
     else:
       return False
